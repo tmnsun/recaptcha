@@ -10,7 +10,7 @@ defmodule Recaptcha.Http do
     {"Accept", "application/json"}
   ]
 
-  @default_verify_url "https://www.google.com/recaptcha/api/siteverify"
+  @verify_url "https://www.google.com/recaptcha/api/siteverify"
 
   @doc """
   Sends an HTTP request to the reCAPTCHA version 2.0 API.
@@ -37,11 +37,10 @@ defmodule Recaptcha.Http do
   """
   @spec request_verification(binary, [timeout: integer]) :: {:ok, map} | {:error, [atom]}
   def request_verification(body, options \\ []) do
-    timeout = options[:timeout] || Config.get_env(:recaptcha, :timeout, 5000)
-    url = Config.get_env(:recaptcha, :verify_url, @default_verify_url)
+    timeout = options[:timeout] || 5000
 
     result =
-      with {:ok, response} <- HTTPoison.post(url, body, @headers, timeout: timeout),
+      with {:ok, response} <- HTTPoison.post(@verify_url, body, @headers, timeout: timeout),
            {:ok, data} <- Poison.decode(response.body) do
         {:ok, data}
       end

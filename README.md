@@ -1,20 +1,8 @@
 # Recaptcha
 
-![Build Status](https://travis-ci.org/samueljseay/recaptcha.svg?branch=master) ![Coverage Status](https://coveralls.io/repos/github/samueljseay/recaptcha/badge.svg?branch=master) [![Hex.pm](https://img.shields.io/badge/Hex-v2.1.1-green.svg)](https://hexdocs.pm/recaptcha)
-
 A simple Elixir package for implementing [reCAPTCHA] in Elixir applications.
 
 [reCAPTCHA]: http://www.google.com/recaptcha
-
-## Migration from 1.x
-
-### Breaking Changes
-
-1. Template functionality is now in a separate module: `Recaptcha.Template`. Please note: in future templating may move to a Phoenix specific package.
-2. `verify` API has changed, see the code for documentation of the new API.
-
-Most other questions about 2.x should be answered by looking over the documentation and the code. Please raise an issue
-if you have any problems with migrating.
 
 ## Installation
 
@@ -23,7 +11,7 @@ if you have any problems with migrating.
 ```elixir
   defp deps do
     [
-      {:recaptcha, "~> 2.0"},
+      {:recaptcha, github: "tmnsun/recaptcha"},
     ]
   end
 ```
@@ -38,37 +26,7 @@ if you have any problems with migrating.
 
 3. Run `mix do deps.get, compile`
 
-## Config
-
-By default the public and private keys are loaded via the `RECAPTCHA_PUBLIC_KEY` and `RECAPTCHA_PRIVATE_KEY` environment variables.
-
-```elixir
-  config :recaptcha,
-    public_key: {:system, "RECAPTCHA_PUBLIC_KEY"},
-    secret: {:system, "RECAPTCHA_PRIVATE_KEY"}
-```
-
 ## Usage
-
-### Render the Widget
-
-Use `raw` (if you're using Phoenix.HTML) and `Recaptcha.Template.display/1` methods to render the captcha widget.
-
-```html
-<form name="someform" method="post" action="/somewhere">
-  ...
-  <%= raw Recaptcha.Template.display %>
-  ...
-</form>
-```
-
-`display` method accepts additional options as a keyword list, the options are:
-
-Option                  | Action                                                 | Default
-:---------------------- | :----------------------------------------------------- | :------------------------
-`noscript`              | Renders default noscript code provided by google       | `false`
-`public_key`            | Sets key to the `data-sitekey` reCaptcha div attribute | Public key from the config file
-
 
 ### Verify API
 
@@ -76,7 +34,7 @@ Recaptcha provides the `verify/2` method. Below is an example using a Phoenix co
 
 ```elixir
   def create(conn, params) do
-    case Recaptcha.verify(params["g-recaptcha-response"]) do
+    case Recaptcha.verify(params["g-recaptcha-response"], [secret: secret_api_key]) do
       {:ok, response} -> do_something
       {:error, errors} -> handle_error
     end
@@ -94,7 +52,7 @@ Recaptcha provides the `verify/2` method. Below is an example using a Phoenix co
 Option                  | Action                                                 | Default
 :---------------------- | :----------------------------------------------------- | :------------------------
 `timeout`               | Time to wait before timeout                            | 5000 (ms)
-`secret`                | Private key to send as a parameter of the API request  | Private key from the config file
+`secret`                | Private key to send as a parameter of the API request  | no default
 `remote_ip`             | Optional. The user's IP address, used by reCaptcha     | no default
 
 ## Contributing
